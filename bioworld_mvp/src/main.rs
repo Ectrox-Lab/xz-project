@@ -14,18 +14,18 @@ fn main() {
     fs::create_dir_all("runs").unwrap();
     fs::create_dir_all("akashic").unwrap();
 
-    // A
-    let a = run_batch("runs/a_survival", "akashic/a", ticks, universes, 1.0, false);
-    // B
-    let b = run_batch("runs/b_evolution", "akashic/b", ticks / 2, universes, 1.1, false);
-    // C low/high
-    let c_low = run_batch("runs/c_pressure_low", "akashic/c_low", ticks / 2, universes, 0.8, false);
-    let c_high = run_batch("runs/c_pressure_high", "akashic/c_high", ticks / 2, universes, 1.5, false);
-    // D
-    let d = run_batch("runs/d_cooperation", "akashic/d", ticks / 2, universes, 1.2, false);
+    // A - CTRL (baseline)
+    let a = run_batch("runs/a_survival", "akashic/a", ticks, universes, 1.0, false, false, 1.0);
+    // B - Evolution pressure
+    let b = run_batch("runs/b_evolution", "akashic/b", ticks / 2, universes, 1.1, false, false, 1.0);
+    // C low/high - P1-C: Boss pressure
+    let c_low = run_batch("runs/c_pressure_low", "akashic/c_low", ticks / 2, universes, 0.8, false, false, 1.0);
+    let c_high = run_batch("runs/c_pressure_high", "akashic/c_high", ticks / 2, universes, 1.5, false, false, 1.0);
+    // D - Cooperation
+    let d = run_batch("runs/d_cooperation", "akashic/d", ticks / 2, universes, 1.2, false, false, 1.0);
     // E off/on
-    let e_off = run_batch("runs/e_akashic_off", "akashic/e_off", ticks / 2, universes, 1.15, false);
-    let e_on = run_batch("runs/e_akashic_on", "akashic/e_on", ticks / 2, universes, 1.15, true);
+    let e_off = run_batch("runs/e_akashic_off", "akashic/e_off", ticks / 2, universes, 1.15, false, false, 1.0);
+    let e_on = run_batch("runs/e_akashic_on", "akashic/e_on", ticks / 2, universes, 1.15, true, false, 1.0);
 
     write_experiment_summary(&[(&"A", &a), (&"B", &b), (&"C_LOW", &c_low), (&"C_HIGH", &c_high), (&"D", &d), (&"E_OFF", &e_off), (&"E_ON", &e_on)]);
     build_top_level_metric_csvs();

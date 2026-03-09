@@ -8,7 +8,16 @@ use crate::bio_world::engine::world::{run_universe, Config, RunSummary};
 use crate::bio_world::experiments::cross_seed::summarize_cross_seed;
 use crate::bio_world::output::json_export::write_akashic;
 
-pub fn run_batch(base_runs: &str, base_akashic: &str, ticks: u32, universe_count: usize, pressure: f64, akashic_on: bool) -> Vec<RunSummary> {
+pub fn run_batch(
+    base_runs: &str,
+    base_akashic: &str,
+    ticks: u32,
+    universe_count: usize,
+    pressure: f64,
+    akashic_on: bool,
+    disable_lineage_memory: bool,
+    cooperation_multiplier: f64,
+) -> Vec<RunSummary> {
     create_dir_all(base_runs).unwrap();
     let base_runs_owned = base_runs.to_string();
     let archive = Arc::new(Mutex::new(AkashicArchive::default()));
@@ -19,9 +28,19 @@ pub fn run_batch(base_runs: &str, base_akashic: &str, ticks: u32, universe_count
         let ar = archive.clone();
         let sm = summaries.clone();
         let br = base_runs_owned.clone();
+        let disable_mem = disable_lineage_memory;
+        let coop_mult = cooperation_multiplier;
         handles.push(thread::spawn(move || {
             let mut guard = ar.lock().unwrap();
-            let cfg = Config { universe_id: u, seed: (u as u64) * 97 + 11, ticks, pressure, akashic_on };
+            let cfg = Config {
+                universe_id: u,
+                seed: (u as u64) * 97 + 11,
+                ticks,
+                pressure,
+                akashic_on,
+                disable_lineage_memory: disable_mem,
+                cooperation_multiplier: coop_mult,
+            };
             let sum = run_universe(&cfg, &mut guard, &br);
             drop(guard);
             sm.lock().unwrap().push(sum);

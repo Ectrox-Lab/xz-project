@@ -35,6 +35,9 @@ pub struct Config {
     pub ticks: u32,
     pub pressure: f64,
     pub akashic_on: bool,
+    // P1 Experiment parameters
+    pub disable_lineage_memory: bool,     // P1-A: Memory KO
+    pub cooperation_multiplier: f64,       // P1-B: Cooperation suppression
 }
 
 #[derive(Clone, Debug, Default)]
@@ -593,6 +596,7 @@ fn resolve_boss(
     s_success: &mut u64,
     m_attempt: &mut u64,
     m_success: &mut u64,
+    cooperation_multiplier: f64,
 ) {
     let idx: Vec<usize> = (0..cells.len())
         .filter(|i| manhattan(cells[*i].position, b.pos) <= 4)

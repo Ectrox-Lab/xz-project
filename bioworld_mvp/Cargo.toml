@@ -3,4 +3,16 @@ name = "bioworld_mvp"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "bioworld_mvp"
+path = "src/lib.rs"
+
+[[bin]]
+name = "bioworld_mvp"
+path = "src/main.rs"
+
+[[bin]]
+name = "p1_experiment"
+path = "src/bin/p1_experiment.rs"
+
 [dependencies]
