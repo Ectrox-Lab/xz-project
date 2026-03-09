@@ -1,10 +1,6 @@
-use super::dna::Dna;
+use crate::bio_world::memory::{cell_memory::CellMemory, lineage_memory::LineageMemory};
 
-#[derive(Clone, Debug)]
-pub struct Memory {
-    pub local_energy_trace: Vec<f64>,
-    pub local_signal_trace: Vec<f64>,
-}
+use super::dna::Dna;
 
 #[derive(Clone, Debug)]
 pub struct CooperationState {
@@ -26,8 +22,10 @@ pub struct Cell {
     pub age: u32,
     pub alive: bool,
     pub dna: Dna,
-    pub memory: Memory,
+    pub cell_memory: CellMemory,
     pub cooperation_state: CooperationState,
     pub signal_state: SignalState,
     pub lineage_id: u64,
+    pub lineage_memory: LineageMemory,
+    pub archive_samples_taken: u32,
 }
