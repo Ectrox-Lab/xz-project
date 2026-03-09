@@ -1,0 +1,20 @@
+# Experiment data (large files)
+runs/
+akashic/
+p1_experiments/
+*.csv
+*.log
+
+# Rust build artifacts
+target/
+Cargo.lock
+
+# OS files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
