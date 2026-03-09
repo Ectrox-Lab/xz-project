@@ -1,0 +1,39 @@
+{
+  "repo": "bio-world",
+  "branch": "work",
+  "commit": "HEAD",
+  "phase": "phase4.6",
+  "triage_status": "HOLD_FOR_MINISCALEUP_COMPLETION",
+  "core_conditions_completed": [
+    "baseline_full",
+    "no_L2",
+    "L3_real_p001",
+    "L3_shuffled_p001"
+  ],
+  "required_now_field_status": {
+    "archive_sample_attempts": "present_true_value",
+    "archive_sample_successes": "present_true_value",
+    "archive_influenced_births": "present_true_value",
+    "lineage_diversity": "present_true_value",
+    "top1_lineage_share": "present_true_value",
+    "strategy_entropy": "present_true_value",
+    "collapse_event_count": "present_true_value"
+  },
+  "strongest_evidence": "All four core conditions were rerun at 5000/8 with complete per_run.csv + telemetry; shuffled and real share same sampling path but differ in remapped content and directional summary outcomes.",
+  "next_action": "Complete clean 10000/16 rerun with finalized per_run.csv for 4 core conditions; current attempt produced partial telemetry only.",
+  "generated_outputs": [
+    "bioworld_mvp/runs/sentinel/baseline_full/per_run.csv",
+    "bioworld_mvp/runs/sentinel/no_L2/per_run.csv",
+    "bioworld_mvp/runs/sentinel/L3_real_p001/per_run.csv",
+    "bioworld_mvp/runs/sentinel/L3_shuffled_p001/per_run.csv",
+    "bioworld_mvp/runs/sentinel/*/u*/memory.csv",
+    "docs/integration/PHASE46_MISSING_OUTPUTS.md",
+    "docs/integration/PHASE46_RERUN_RESULTS.md",
+    "docs/integration/PHASE46_STRONGER_SHUFFLED_EQUIVALENCE.md",
+    "docs/integration/PHASE46_ANTI_ORACLE_GAPS.md"
+  ],
+  "blockers_summary": [
+    "10000/16 core rerun produced partial telemetry directories but missing finalized per_run.csv in this attempt",
+    "Need rerun completion at same config for adjudication-ready summaries"
+  ]
+}
