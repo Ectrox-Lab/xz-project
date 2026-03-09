@@ -10,6 +10,12 @@ cargo run --release
 - `runs/summary.json`
 - `akashic/akashic_archive.json`
 
+附加验证命令：
+```bash
+python bioworld_mvp/scripts/verify_runs.py
+```
+输出：`runs/verification.json`（逐实验验收判定 + 反作弊代码检查）。
+
 ## 2. 实验矩阵
 - **A 生存闭环**：10,000 ticks；验证 death>0、birth>0、population 非恒定。
 - **B 进化闭环**：1,000 ticks；验证 mutation_count>0、dna_variance 上升、谱系分化>2。

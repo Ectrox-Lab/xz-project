@@ -1,0 +1,43 @@
+{
+  "anti_cheat_code_audit": {
+    "has_success_formula": true,
+    "has_autowin_pattern": false,
+    "pass": true
+  },
+  "experiment_A_survival": {
+    "ticks": 10000,
+    "births_total": 351921,
+    "deaths_total": 1811,
+    "population_non_constant": true,
+    "pass": true
+  },
+  "experiment_B_evolution": {
+    "mutation_count_total": 3071,
+    "dna_variance_start": 0.051891,
+    "dna_variance_end": 0.074643,
+    "lineage_count_final": 26,
+    "pass": true
+  },
+  "experiment_C_pressure": {
+    "deaths_low": 0,
+    "deaths_high": 904,
+    "shift_move_taxis_low": -0.047732,
+    "shift_move_taxis_high": 0.097229,
+    "pass": true
+  },
+  "experiment_D_cooperation": {
+    "boss3_single_success": 0.0,
+    "boss3_multi_success": 0.994995,
+    "pass": true
+  },
+  "experiment_E_akashic": {
+    "adaptation_gain_off": 12.771707,
+    "adaptation_gain_on": 64.560955,
+    "deaths_off_total": 3,
+    "deaths_on_total": 16,
+    "boss3_multi_success_off": 1.0,
+    "boss3_multi_success_on": 0.993664,
+    "pass": true,
+    "note": "Akashic 目标是经验加速，不保证死亡率单调下降。"
+  }
+}
