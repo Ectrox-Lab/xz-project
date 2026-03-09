@@ -2,22 +2,26 @@
   "repo": "bio-world",
   "branch": "work",
   "commit": "HEAD",
-  "phase": "phase3",
-  "last_synced_other_repo": "atlas-hec-v2.1:phase3 pending review",
-  "interface_version": "0.3.0-phase3",
-  "owned_modules": [
-    "bioworld_mvp/src/main.rs",
-    "bioworld_mvp/src/bio_world/experiments/experiment_runner.rs",
-    "bioworld_mvp/src/bio_world/engine/world.rs",
-    "docs/integration/PHASE3_*"
-  ],
-  "executed_conditions": [
+  "phase": "phase4",
+  "triage_status": "GO_with_blockers",
+  "core_conditions_completed": [
     "baseline_full",
     "no_L2",
     "L3_off",
     "L3_real_p001",
     "L3_shuffled_p001"
   ],
+  "required_now_field_status": {
+    "archive_sample_attempts": "present_true_value",
+    "archive_sample_successes": "present_true_value",
+    "archive_influenced_births": "present_true_value",
+    "lineage_diversity": "present_true_value",
+    "top1_lineage_share": "present_true_value",
+    "strategy_entropy": "present_true_value",
+    "collapse_event_count": "present_true_value"
+  },
+  "strongest_evidence": "L3_real_p001 vs L3_shuffled_p001 shows comparable archive bandwidth counters but diverging diversity/share/entropy directions in per_run.csv.",
+  "next_action": "Execute optional no_L1 and L3_overpowered_direct in same config, then run thresholded comparison once atlas criteria are provided.",
   "generated_outputs": [
     "bioworld_mvp/runs/sentinel/baseline_full/per_run.csv",
     "bioworld_mvp/runs/sentinel/no_L2/per_run.csv",
@@ -27,16 +31,8 @@
     "bioworld_mvp/runs/sentinel/*/u*/memory.csv"
   ],
   "blockers_summary": [
-    "Optional modes no_L1 and L3_overpowered_direct not executed in this pass",
-    "Need atlas acceptance threshold for L3_real_p001 vs L3_shuffled_p001",
-    "Need stronger integration-level anti-god-mode regression coverage"
-  ],
-  "blocking_issues": [
-    "Need atlas-approved effect criteria for shuffled vs real interpretation",
-    "Phase 3 continuity probe hook still pending"
-  ],
-  "next_expected_inputs": [
-    "Atlas acceptance rubric for L3_real_p001 vs L3_shuffled_p001",
-    "Atlas CI/r equation mapping for continuity probe"
+    "Optional modes not executed in this round (no_L1, L3_overpowered_direct)",
+    "Interpretation threshold for real-vs-shuffled still pending from atlas",
+    "Integration-level anti-god-mode path-unreachability proof still weak"
   ]
 }

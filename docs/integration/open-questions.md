@@ -1,16 +1,16 @@
 # Open Questions (Atlas Sync)
 
 ## blocker
-- [runnable] Optional sentinel modes `no_L1` and `L3_overpowered_direct` were not executed in this phase pass.
-- [semantic] Need acceptance threshold definition for `L3_real_p001` vs `L3_shuffled_p001` (metric + effect size).
-- [evidence] Need stronger end-to-end regression proof for "no direct archive injection reachable" across all sentinel modes.
-- [variance] Small-run variance remains high at `ticks=2000, seeds=4`; requires larger repeat to stabilize interpretation.
+- [field] Confirm whether `lineage_diversity` remains normalized (`distinct_lineages / population`) or should be absolute count in acceptance checks.
+- [runnable] Optional conditions `no_L1` and `L3_overpowered_direct` are not included in this Phase 4 packaged result set.
+- [evidence] Need stronger integration-level proof for "direct archive injection unreachable" across all sentinel modes.
+- [interpretation] Need atlas-defined effect-size/decision threshold for interpreting `L3_real_p001` vs `L3_shuffled_p001`.
 
 ## semantic mismatch
-1. Confirm whether `lineage_diversity` should stay normalized (`distinct_lineages / population`) or become absolute count.
-2. Confirm whether `collapse_event_count` should represent all in-run collapse events or terminal collapse only.
+1. `collapse_event_count` currently counts in-run extinction events; confirm if only terminal collapse should count.
+2. Strategy entropy is averaged per tick per run; confirm if atlas expects terminal-only value.
 
 ## next-phase proposal
-1. Execute optional modes (`no_L1`, `L3_overpowered_direct`) and append to phase summary.
-2. Add automated comparative report generation for real vs shuffled conditions.
-3. Add integration-level anti-god-mode audit tests spanning all sentinel modes.
+1. Run `no_L1` and `L3_overpowered_direct` under same `ticks=2000,seeds=4` for completion parity.
+2. Add a scripted comparison artifact (CSV/markdown) automatically generated after run completion.
+3. Add integration regression asserting forbidden direct archive->cell injection paths are unreachable in normal modes.
