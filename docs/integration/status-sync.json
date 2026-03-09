@@ -2,8 +2,8 @@
   "repo": "bio-world",
   "branch": "work",
   "commit": "HEAD",
-  "phase": "phase4",
-  "triage_status": "GO_with_blockers",
+  "phase": "phase4.5",
+  "triage_status": "HOLD_pending_atlas_adjudication",
   "core_conditions_completed": [
     "baseline_full",
     "no_L2",
@@ -20,19 +20,22 @@
     "strategy_entropy": "present_true_value",
     "collapse_event_count": "present_true_value"
   },
-  "strongest_evidence": "L3_real_p001 vs L3_shuffled_p001 shows comparable archive bandwidth counters but diverging diversity/share/entropy directions in per_run.csv.",
-  "next_action": "Execute optional no_L1 and L3_overpowered_direct in same config, then run thresholded comparison once atlas criteria are provided.",
+  "strongest_evidence": "Shuffled control keeps sampling pipeline/bandwidth path while changing context mapping, and produces directional divergence vs L3_real_p001 in diversity/share/entropy summaries.",
+  "next_action": "Wait for atlas interpretation thresholds; if requested, execute minimal rerun for missing optional conditions or field-specific closure only.",
   "generated_outputs": [
     "bioworld_mvp/runs/sentinel/baseline_full/per_run.csv",
     "bioworld_mvp/runs/sentinel/no_L2/per_run.csv",
     "bioworld_mvp/runs/sentinel/L3_off/per_run.csv",
     "bioworld_mvp/runs/sentinel/L3_real_p001/per_run.csv",
     "bioworld_mvp/runs/sentinel/L3_shuffled_p001/per_run.csv",
-    "bioworld_mvp/runs/sentinel/*/u*/memory.csv"
+    "bioworld_mvp/runs/sentinel/*/u*/memory.csv",
+    "docs/integration/SEMANTIC_NOTES_PHASE45.md",
+    "docs/integration/PHASE45_METRIC_SUMMARY.md",
+    "docs/integration/PHASE45_SHUFFLED_CONTROL_NOTE.md"
   ],
   "blockers_summary": [
-    "Optional modes not executed in this round (no_L1, L3_overpowered_direct)",
-    "Interpretation threshold for real-vs-shuffled still pending from atlas",
-    "Integration-level anti-god-mode path-unreachability proof still weak"
+    "Need atlas-defined interpretation threshold for real vs shuffled",
+    "Optional conditions no_L1 and L3_overpowered_direct not included in this phase4.5 summary",
+    "Need dedicated invariant test for shuffled-vs-real bandwidth equivalence"
   ]
 }
