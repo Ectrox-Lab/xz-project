@@ -783,4 +783,18 @@ mod sentinel_mode_tests {
     fn test_overpowered_mode_flag() {
         assert!(SentinelMode::L3OverpoweredDirect.overpowered_direct());
     }
+
+    #[test]
+    fn test_real_and_shuffled_mode_have_same_access_envelope() {
+        let real = SentinelMode::L3RealP001;
+        let shuffled = SentinelMode::L3ShuffledP001;
+
+        assert_eq!(real.l1_enabled(), shuffled.l1_enabled());
+        assert_eq!(real.l2_enabled(), shuffled.l2_enabled());
+        assert_eq!(real.l3_enabled(), shuffled.l3_enabled());
+        assert_eq!(real.overpowered_direct(), shuffled.overpowered_direct());
+        assert!(!real.l3_shuffled());
+        assert!(shuffled.l3_shuffled());
+    }
 }
+

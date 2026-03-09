@@ -1,16 +1,16 @@
 # Open Questions (Atlas Sync)
 
 ## blocker
-- [field] Confirm final adjudication semantics for `lineage_diversity` (normalized ratio vs absolute count).
-- [runnable] Core minimal rerun is complete; confirm whether atlas still requires optional `no_L1` and `L3_overpowered_direct` reruns in this cycle.
-- [evidence] Need decision on whether observational equivalence evidence is sufficient, or invariant test patch is required now.
-- [interpretation] Provide threshold rule for interpreting `L3_real_p001` vs `L3_shuffled_p001` deltas.
+- [field] `per_run.csv` finalization is missing for the latest 10000/16 mini-scale-up attempt; confirm whether atlas accepts prior 5000/8 summaries as temporary fallback.
+- [runnable] Re-run requirement: complete clean 10000/16 runs for `baseline_full`, `no_L2`, `L3_real_p001`, `L3_shuffled_p001`.
+- [evidence] Need completed 10000/16 output set to tighten real-vs-shuffled interpretation confidence.
+- [interpretation] Keep atlas threshold request open; adjudication should wait until clean 10000/16 closure.
 
 ## semantic mismatch
-1. `collapse_event_count` remains zero across core 5000/8 reruns; confirm expected handling when collapse signal is absent.
-2. `survival_time` is measured as ticks with `population > 0`; confirm this is acceptable for atlas side comparison.
+1. Confirm whether atlas wants strict 16/16 successful universes per condition or allows partial-universe retries with explicit tagging.
+2. Confirm whether missing per_run finalization can be replaced by reconstructed summaries from per-seed telemetry (currently not done).
 
 ## next-phase proposal
-1. If atlas requests stronger proof, add only a tiny invariant test around shuffled-vs-real sampling/bandwidth counters.
-2. If atlas requests completeness, run optional `no_L1` and `L3_overpowered_direct` with the same 5000/8 config and append summaries.
-3. Keep changes minimal: no new modes, no refactor, no long-run expansion.
+1. Re-run the 4 conditions in a dedicated window with no concurrent heavy jobs.
+2. Keep scope fixed (no new conditions, no new modules).
+3. After clean rerun, refresh metric summary docs and status-sync in one pass.

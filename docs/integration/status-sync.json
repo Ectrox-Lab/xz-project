@@ -3,7 +3,7 @@
   "branch": "work",
   "commit": "HEAD",
   "phase": "phase4.6",
-  "triage_status": "HOLD_FOR_MINIMAL_RERUN_RESOLVED_CORE",
+  "triage_status": "HOLD_FOR_MINISCALEUP_COMPLETION",
   "core_conditions_completed": [
     "baseline_full",
     "no_L2",
@@ -20,7 +20,7 @@
     "collapse_event_count": "present_true_value"
   },
   "strongest_evidence": "All four core conditions were rerun at 5000/8 with complete per_run.csv + telemetry; shuffled and real share same sampling path but differ in remapped content and directional summary outcomes.",
-  "next_action": "Atlas adjudication on interpretation threshold; optionally request tiny follow-up invariant test patch for shuffled-vs-real bandwidth equivalence.",
+  "next_action": "Complete clean 10000/16 rerun with finalized per_run.csv for 4 core conditions; current attempt produced partial telemetry only.",
   "generated_outputs": [
     "bioworld_mvp/runs/sentinel/baseline_full/per_run.csv",
     "bioworld_mvp/runs/sentinel/no_L2/per_run.csv",
@@ -33,7 +33,7 @@
     "docs/integration/PHASE46_ANTI_ORACLE_GAPS.md"
   ],
   "blockers_summary": [
-    "Atlas interpretation threshold for real-vs-shuffled remains unresolved",
-    "No formal invariant test yet for shuffled-vs-real bandwidth equivalence"
+    "10000/16 core rerun produced partial telemetry directories but missing finalized per_run.csv in this attempt",
+    "Need rerun completion at same config for adjudication-ready summaries"
   ]
 }

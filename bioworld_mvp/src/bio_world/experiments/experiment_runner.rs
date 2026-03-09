@@ -50,7 +50,10 @@ pub fn run_batch(base_runs: &str, base_akashic: &str, options: &BatchOptions) ->
 
     let out = summaries.lock().unwrap().clone();
     let archive_final = archive.lock().unwrap().clone();
-    write_akashic(base_akashic, &archive_final);
+    // Sentinel runs do not require full archive persistence for analysis closure.
+    if !base_akashic.contains("sentinel") {
+        write_akashic(base_akashic, &archive_final);
+    }
 
     let (mean_adapt, mean_multi, hazard_ratio) = summarize_cross_seed(&out);
     let mut f = File::create(format!("{}/cross_seed_summary.csv", base_runs)).unwrap();
