@@ -12,11 +12,17 @@ use crate::bio_world::evolution::cooperation::cooperation_success;
 use crate::bio_world::evolution::mutation::mutate_dna;
 use crate::bio_world::evolution::reproduction::can_reproduce;
 use crate::bio_world::evolution::selection::survive;
+use crate::bio_world::memory::access_guard::{
+    AccessMode, AccessRequest, Accessor, MemoryAccessGuard, Target,
+};
 use crate::bio_world::memory::causal_archive::{
     ArchiveSamplingPolicy, CausalArchive, CausalArchiveRecord,
 };
 use crate::bio_world::memory::cell_memory::CellMemory;
-use crate::bio_world::memory::constants::{MAX_ARCHIVE_WRITE_RATE, SAMPLES_PER_LIFETIME};
+use crate::bio_world::memory::constants::{
+    ARCHIVE_SAMPLE_PROBABILITY, MAX_ARCHIVE_WRITE_RATE, MAX_CELL_MEMORY_WINDOW,
+    MAX_DISTILLED_LESSONS, SAMPLES_PER_LIFETIME,
+};
 use crate::bio_world::memory::lineage_memory::LineageMemory;
 use crate::bio_world::metrics::cdi::compute_cdi;
 use crate::bio_world::metrics::stability::{extinction_probability, hazard_rate};
@@ -104,6 +110,7 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
     let bosses = build_bosses();
     let mut mutation_history: Vec<MutationEvent> = Vec::new();
     let mut memory_archive = CausalArchive::default();
+    let mut access_guard = MemoryAccessGuard::default();
 
     for _ in 0..300 {
         let mut p = (
@@ -173,6 +180,9 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
         let mut mut_count = 0u32;
         let mut transfer = 0u32;
         let mut moved = 0u32;
+        let mut archive_sample_attempts = 0u32;
+        let mut archive_sample_successes = 0u32;
+        let mut archive_influenced_births = 0u32;
 
         let current_len = cells.len();
         for i in 0..current_len {
@@ -219,6 +229,7 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
                 c.cell_memory.record_experience(format!("tick:{}", tick));
                 c.cell_memory.stress_level = (1.0 - (c.energy as f32 / 100.0)).clamp(0.0, 1.0);
                 c.cell_memory.decay();
+                debug_assert!(c.cell_memory.recent_energy_history.len() <= MAX_CELL_MEMORY_WINDOW);
                 let mcost = c.cell_memory.recent_energy_history.len() as f64 * 0.01;
                 c.energy -= mcost;
                 ledger.cost_memory += mcost;
@@ -239,21 +250,31 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
                         c.energy -= rcost;
                         ledger.cost_reproduction += rcost;
                         births += 1;
-                        // P1-A: Memory KO - disable lineage memory inheritance and archive sampling
-                        let mut child_lineage = if cfg.disable_lineage_memory {
-                            LineageMemory::new(c.lineage_id) // Fresh memory, no inheritance
-                        } else {
-                            let mut inherited = LineageMemory::inherit_from(&c.lineage_memory, &mut rng);
-                            if c.archive_samples_taken < SAMPLES_PER_LIFETIME {
-                                if let Some(record) = memory_archive
-                                    .random_sample(&mut rng, &ArchiveSamplingPolicy::default())
-                                {
-                                    inherited.push_lesson(CausalArchive::compress_to_lesson(record));
-                                    c.archive_samples_taken += 1;
-                                }
+                        let mut child_lineage =
+                            LineageMemory::inherit_from(&c.lineage_memory, &mut rng);
+                        if c.archive_samples_taken < SAMPLES_PER_LIFETIME {
+                            archive_sample_attempts += 1;
+                            access_guard
+                                .validate(AccessRequest {
+                                    accessor: Accessor::Lineage(c.lineage_id),
+                                    target: Target::Archive,
+                                    mode: AccessMode::Read,
+                                    sample_probability: Some(ARCHIVE_SAMPLE_PROBABILITY),
+                                })
+                                .expect("lineage read of archive must obey guard");
+                            if let Some(record) = memory_archive
+                                .random_sample(&mut rng, &ArchiveSamplingPolicy::default())
+                            {
+                                child_lineage
+                                    .push_lesson(CausalArchive::compress_to_lesson(record));
+                                archive_sample_successes += 1;
+                                archive_influenced_births += 1;
+                                c.archive_samples_taken += 1;
                             }
-                            inherited
-                        };
+                        }
+                        debug_assert!(
+                            child_lineage.distilled_lessons.len() <= MAX_DISTILLED_LESSONS
+                        );
                         child = Some(Cell {
                             id: next_id,
                             position: np,
@@ -294,7 +315,6 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
                 &mut b_single_success,
                 &mut b_multi_attempt,
                 &mut b_multi_success,
-                cfg.cooperation_multiplier,
             );
         }
 
@@ -341,6 +361,22 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
             memory_archive.reset_rate_window();
         }
         debug_assert!(MAX_ARCHIVE_WRITE_RATE <= 1);
+        debug_assert!(access_guard
+            .validate(AccessRequest {
+                accessor: Accessor::Cell(0),
+                target: Target::Archive,
+                mode: AccessMode::Read,
+                sample_probability: None,
+            })
+            .is_err());
+        debug_assert!(access_guard
+            .validate(AccessRequest {
+                accessor: Accessor::Archive,
+                target: Target::CellMemory(0),
+                mode: AccessMode::Write,
+                sample_probability: None,
+            })
+            .is_err());
         memory_archive.process_queue();
         memory_archive.compress_old_records();
 
@@ -373,9 +409,15 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
         };
         let mut lineage = HashSet::new();
         let mut all_dna = Vec::new();
+        let mut lineage_counts = std::collections::HashMap::<u64, usize>::new();
+        let mut strategy_counts = std::collections::HashMap::<String, usize>::new();
         for c in &cells {
             lineage.insert(c.lineage_id);
             all_dna.extend(c.dna.as_vec());
+            *lineage_counts.entry(c.lineage_id).or_insert(0) += 1;
+            *strategy_counts
+                .entry(c.lineage_memory.preferred_strategy.clone())
+                .or_insert(0) += 1;
         }
         let dna_var = variance(&all_dna);
 
@@ -399,6 +441,34 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
                 .sum::<f64>()
                 / pop as f64
         };
+        let lineage_diversity = if pop == 0 {
+            0.0
+        } else {
+            lineage_counts.len() as f64 / pop as f64
+        };
+        let top1_lineage_share = if pop == 0 {
+            0.0
+        } else {
+            let max_lineage = lineage_counts.values().copied().max().unwrap_or(0);
+            max_lineage as f64 / pop as f64
+        };
+        let strategy_entropy = if pop == 0 {
+            0.0
+        } else {
+            strategy_counts
+                .values()
+                .map(|count| {
+                    let p = *count as f64 / pop as f64;
+                    if p <= f64::EPSILON {
+                        0.0
+                    } else {
+                        -p * p.ln()
+                    }
+                })
+                .sum::<f64>()
+        };
+        let collapse_event_count = extinction_events as u64;
+
         let explore = moved as f64 / pop.max(1) as f64;
         let cdi = compute_cdi(signal_div, coop_density, mem_use, explore);
         let h = hazard_rate(cdi, 0.05);
@@ -407,15 +477,13 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
 
         writeln!(
             log.population,
-            "{},{},{},{},{:.4},{},{:.5},{}",
+            "{},{},{},{},{:.4},{}",
             tick,
             pop,
             births,
             deaths,
             avg_energy,
-            lineage.len(),
-            avg_stress_level,
-            memory_archive.record_count()
+            lineage.len()
         )
         .unwrap();
         writeln!(
@@ -425,6 +493,21 @@ pub fn run_universe(cfg: &Config, archive: &mut AkashicArchive, base_runs: &str)
         )
         .unwrap();
         writeln!(log.mutation, "{},{},{:.6}", tick, mut_count, dna_var).unwrap();
+        writeln!(
+            log.memory,
+            "{},{:.5},{},{},{},{},{:.6},{:.6},{:.6},{}",
+            tick,
+            avg_stress_level,
+            memory_archive.record_count(),
+            archive_sample_attempts,
+            archive_sample_successes,
+            archive_influenced_births,
+            lineage_diversity,
+            top1_lineage_share,
+            strategy_entropy,
+            collapse_event_count
+        )
+        .unwrap();
         writeln!(
             log.boss,
             "{},{},{:.6},{:.6},{}",
@@ -555,12 +638,10 @@ fn resolve_boss(
         cells[*i].cooperation_state.synchrony_score = synchrony;
     }
     if success {
-        // P1-B: Cooperation suppression - apply multiplier to reward
-        let adjusted_reward = b.difficulty.reward * cooperation_multiplier;
         for i in &idx {
-            cells[*i].energy += adjusted_reward / n as f64;
+            cells[*i].energy += b.difficulty.reward / n as f64;
         }
-        ledger.input_boss_reward += adjusted_reward;
+        ledger.input_boss_reward += b.difficulty.reward;
         if n == 1 {
             *s_success += 1;
         } else {

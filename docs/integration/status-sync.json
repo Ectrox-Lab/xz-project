@@ -1,0 +1,20 @@
+{
+  "repo": "bio-world",
+  "branch": "work",
+  "commit": "HEAD",
+  "last_synced_other_repo": "atlas-hec-v2.1:unknown",
+  "interface_version": "0.1.0-pr1",
+  "owned_modules": [
+    "bioworld_mvp/src/bio_world/memory",
+    "bioworld_mvp/src/bio_world/engine/world.rs",
+    "bioworld_mvp/src/bio_world/output/csv_logger.rs"
+  ],
+  "blocking_issues": [
+    "PR-2 sentinel condition toggles not implemented yet",
+    "PR-3 continuity probe hook not implemented yet"
+  ],
+  "next_expected_inputs": [
+    "atlas confirmation of CI and r field definitions",
+    "atlas expected schema for continuity probe csv"
+  ]
+}

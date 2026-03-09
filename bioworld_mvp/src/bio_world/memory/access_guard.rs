@@ -10,6 +10,7 @@ pub enum Accessor {
 #[derive(Clone, Debug, PartialEq)]
 pub enum Target {
     CellMemory(u64),
+    CellStrategy(u64),
     LineageMemory(u64),
     Archive,
 }
@@ -55,6 +56,9 @@ impl MemoryAccessGuard {
             (Accessor::Archive, Target::CellMemory(_), AccessMode::Write) => {
                 Err(AccessError::Forbidden)
             }
+            (Accessor::Archive, Target::CellStrategy(_), AccessMode::Write) => {
+                Err(AccessError::Forbidden)
+            }
             _ => {
                 self.access_log.push(format!("{:?}", request));
                 Ok(())
@@ -86,6 +90,18 @@ mod tests {
         let result = guard.validate(AccessRequest {
             accessor: Accessor::Archive,
             target: Target::CellMemory(1),
+            mode: AccessMode::Write,
+            sample_probability: None,
+        });
+        assert_eq!(result, Err(AccessError::Forbidden));
+    }
+
+    #[test]
+    fn test_archive_cannot_inject_cell_strategy() {
+        let mut guard = MemoryAccessGuard::default();
+        let result = guard.validate(AccessRequest {
+            accessor: Accessor::Archive,
+            target: Target::CellStrategy(1),
             mode: AccessMode::Write,
             sample_probability: None,
         });

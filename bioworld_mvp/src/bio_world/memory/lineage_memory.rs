@@ -69,6 +69,18 @@ mod tests {
     use super::LineageMemory;
 
     #[test]
+    fn test_max_lessons_enforced() {
+        let mut lineage = LineageMemory::new(1);
+        for i in 0..20 {
+            lineage.push_lesson(super::DistilledLesson {
+                key: format!("k{}", i),
+                value: i as f32,
+            });
+        }
+        assert_eq!(lineage.distilled_lessons.len(), 5);
+    }
+
+    #[test]
     fn test_mutation_rate() {
         let lineage = LineageMemory::new(1);
         let original = lineage.preferred_strategy.clone();
