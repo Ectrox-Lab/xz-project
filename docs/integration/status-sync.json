@@ -2,20 +2,41 @@
   "repo": "bio-world",
   "branch": "work",
   "commit": "HEAD",
-  "last_synced_other_repo": "atlas-hec-v2.1:contract+audit ingested",
-  "interface_version": "0.2.0-phase2",
+  "phase": "phase3",
+  "last_synced_other_repo": "atlas-hec-v2.1:phase3 pending review",
+  "interface_version": "0.3.0-phase3",
   "owned_modules": [
     "bioworld_mvp/src/main.rs",
     "bioworld_mvp/src/bio_world/experiments/experiment_runner.rs",
     "bioworld_mvp/src/bio_world/engine/world.rs",
-    "bioworld_mvp/src/bio_world/output/csv_logger.rs"
+    "docs/integration/PHASE3_*"
+  ],
+  "executed_conditions": [
+    "baseline_full",
+    "no_L2",
+    "L3_off",
+    "L3_real_p001",
+    "L3_shuffled_p001"
+  ],
+  "generated_outputs": [
+    "bioworld_mvp/runs/sentinel/baseline_full/per_run.csv",
+    "bioworld_mvp/runs/sentinel/no_L2/per_run.csv",
+    "bioworld_mvp/runs/sentinel/L3_off/per_run.csv",
+    "bioworld_mvp/runs/sentinel/L3_real_p001/per_run.csv",
+    "bioworld_mvp/runs/sentinel/L3_shuffled_p001/per_run.csv",
+    "bioworld_mvp/runs/sentinel/*/u*/memory.csv"
+  ],
+  "blockers_summary": [
+    "Optional modes no_L1 and L3_overpowered_direct not executed in this pass",
+    "Need atlas acceptance threshold for L3_real_p001 vs L3_shuffled_p001",
+    "Need stronger integration-level anti-god-mode regression coverage"
   ],
   "blocking_issues": [
     "Need atlas-approved effect criteria for shuffled vs real interpretation",
     "Phase 3 continuity probe hook still pending"
   ],
   "next_expected_inputs": [
-    "Atlas CI/r equation mapping for continuity probe",
-    "Atlas sentinel comparison acceptance rubric"
+    "Atlas acceptance rubric for L3_real_p001 vs L3_shuffled_p001",
+    "Atlas CI/r equation mapping for continuity probe"
   ]
 }
